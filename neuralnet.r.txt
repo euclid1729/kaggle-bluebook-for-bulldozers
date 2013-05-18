@@ -1,0 +1,48 @@
+library(caret)
+library(randomForest)
+
+colnames1<-c("Drive_System"  ,"ProductGroup" ,"state0" ,"state1","PrimarySizeBasis" ,"fiManufacturerID","Tire_Size","auctioneerID","UsageBand","ProductSize","Age","YearMade")
+colnames2<-setdiff(colnames(data.train),colnames1)
+colnames1=append(colnames1,"SalePrice")
+
+data.train1<-data.train[,colnames1]
+data.train2<-data.train[,colnames2]
+
+#training 2 random forest 
+rids.train=sample(1:nrow(data.train1),50000,replace=FALSE)
+data.train.s1 <- data.train1[rids.train,]
+data.train.s2 <- data.train2[rids.train,]
+
+data.test.s1=data.train1[-rids.train,]
+data.test.s2=data.train2[-rids.train,]
+
+rf1 <- randomForest(SalePrice~.,data=data.train.s1,mtry=5,ntree=150)
+rf2 <- randomForest(SalePrice~.,data=data.train.s2,mtry=5,ntree=150)
+
+pred.values1 <- predict(rf1,newdata=data.test.s1)
+pred.values2 <- predict(rf2,newdata=data.test.s2)
+
+Y<-data.train$SalePrice[-rids.train]
+df=data.frame("Y"=Y,"X1"=pred.values1,"X2"=pred.values2)
+df=data.matrix(df)
+library("neuralnet")
+
+
+net <- neuralnet(Y  ~ X1 + X2,data=df, hidden=3,
+                 threshold=0.01,linear.output=FALSE,learningrate=0.01,algorithm="backprop",err.fct="sse",rep=100,stepmax=100000)
+
+#preparing test data 
+colnames2<-setdiff(colnames(data.train),colnames1)
+colnames2<-colnames2[which(colnames2 != "SalePrice")]
+
+data.test1<-data.test[,colnames1]
+data.test2<-data.test[,colnames2]
+
+pred.values1 <- predict(rf1,newdata=data.test1)
+pred.values2 <- predict(rf2,newdata=data.test2)
+
+input_matrix=data.frame("X1"=pred.values1,"X2"=pred.values2)
+input_matrix=data.matrix(input_matrix)
+
+results <- compute(net,input_matrix)
+res=results$net.result

@@ -1,0 +1,47 @@
+#dimension reduction and formatting on merged data
+data=mergeddata
+
+drop_cols<-function()
+{
+data$MachineID<-NULL
+data$datasource<-NULL
+data$MachineHoursCurrentMeter<-NULL
+data$YearMade<-NULL
+data$SaleYear<-NULL
+data$SaleMonth<-NULL
+data$SaleDay<-NULL
+data$fiModelSeries<-NULL
+data$fiProductClassDesc<-NULL
+data$fiManufacturerDesc<-NULL
+data$Engine_Horsepower<-NULL
+data$Coupler_System<-NULL
+data$Grouser_Tracks<-NULL
+data$Backhoe_Mounting<-NULL
+data$Blade_Extension<-NULL
+data$Age<-mergeddata$SaleYear-mergeddata$YearMade
+data$Age<-as.numeric(data$Age)    
+}
+
+missingvals<-function(){
+
+  for (i in 1:ncol(data))
+  {
+    rids<-which(is.na(data[,i]))
+    if (length(rids) >0)
+    {
+      data[rids,i]<- -1
+    }
+  }
+  
+}
+rids<-which(data$Drive_System == 'No')
+data$Drive_System[rids]=-1
+
+rids<-which(data$Blade_Type =="NO")
+data$Blade_Type[rids]=-1
+
+rids<-which(data$Pattern_Changer =="NO") 
+data$Pattern_Changer[rids]=-1
+
+rids<-which(data$Blade_Type =="NO") 
+data$Blade_Type[rids]=-1

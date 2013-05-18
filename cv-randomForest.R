@@ -1,0 +1,8 @@
+library(caret)
+library(parallel)
+library(randomForest)
+fitControl <- trainControl(method = "cv", number = 1) 
+grid <- expand.grid(.mtry=c(5))
+#rowIds = sample(seq(401125),100000,replace=FALSE)
+model <- randomForest(SalePrice ~ ., data = pca_data, mtry=5, ntree = 50, do.trace=TRUE)
+save(model,file="modelRF.rdata")
