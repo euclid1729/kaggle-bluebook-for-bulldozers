@@ -11,5 +11,5 @@ e.g. Sales Price, Sales ID, Auctioneer ID, Sales Date, State etc. and machine ch
 relevant to price of machine e.g. Machine Usage, Machine Hours Current Meter, Product Class
 Description, Product Group etc.
 
-For modelling and implementation details llok at the projectDetailedDescription.pdf
+For modelling and implementation details look at the projectDetailedDescription.pdf
 
